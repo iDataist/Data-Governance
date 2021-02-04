@@ -1,0 +1,85 @@
+"usr.users"
+--
+UserID INT PK
+FirstName VARCHAR(50)
+LastName VARCHAR(50)
+Email VARCHAR(50)
+Address VARCHAR(50)
+ZipCode VARCHAR(10)
+
+"usr.creditcards"
+--
+CreditCardID INT PK
+CreditCardNumber VARCHAR(50)
+CreditCardExpirationDate DATE
+UserID INT FK >- "usr.users".UserID
+
+"li.listings"
+--
+ListingID INT PK
+SellerID INT FK >- "usr.users".UserID
+ProductID INT FK >- "im.Items".ItemID
+ShoeType VARCHAR(50)
+Brand VARCHAR(50)
+Color VARCHAR(15)
+Gender CHAR(1)
+Size VARCHAR(4)
+Condition VARCHAR(50)
+ListingPrice DECIMAL(82)
+ListingType VARCHAR(20)
+ListingCreateDate DATE
+ListingEndDate DATE
+
+"op.Orders"
+--
+OrderID INT PK
+BuyerID INT FK >- "usr.users".UserID
+CreditCardID INT FK >- "usr.creditcards".CreditCardID
+ShippingCost DECIMAL(5,2)
+TaxRatePercent SMALLINT
+TotalAmount DECIMAL(8,2)
+ShippingAddress VARCHAR(100)
+ShippingZipCode VARCHAR(10)
+OrderDate TIMESTAMP
+Status VARCHAR(50)
+
+"op.OrderItems"
+--
+OrderID INT PK FK >- "op.Orders".OrderID
+ListingID INT PK FK >- "li.listings".ListingID
+ListingSoldPrice DECIMAL(8,2)
+
+"op.OrderShipments"
+--
+ShipmentID INT PK
+OrderID INT FK >- "op.Orders".OrderID
+Carrier VARCHAR(50)
+TrackingNumber VARCHAR(30)
+OrderShipDate DATE
+
+"im.Items"
+--
+ItemID INT PK
+ItemName VARCHAR(100)
+SellerID INT FK >- "usr.users".UserID
+Type VARCHAR(50)
+BrandName VARCHAR(100)
+Color VARCHAR(15)
+Size VARCHAR(4)
+Sex VARCHAR(10)
+Condition VARCHAR(50)
+ItemStatus VARCHAR(50)
+ArrivalDate DATE
+
+"cs.CustomerServiceRequests"
+--
+ID INT PK
+UserID INT FK >- "usr.users".UserID
+FirstName VARCHAR(50)
+LastName VARCHAR(50)
+ContactReason VARCHAR(50)
+Email VARCHAR(50)
+Phone VARCHAR(50)
+OrderID INT FK >- "op.OrderShipments".OrderID
+Resolution VARCHAR(50)
+ContactMethod VARCHAR(50)
