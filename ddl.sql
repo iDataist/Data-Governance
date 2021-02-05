@@ -1,6 +1,8 @@
 CREATE SCHEMA IF NOT EXISTS op;
 CREATE SCHEMA IF NOT EXISTS li;
 CREATE SCHEMA IF NOT EXISTS usr;
+CREATE SCHEMA IF NOT EXISTS im;
+CREATE SCHEMA IF NOT EXISTS cs;
 
 DROP TABLE IF EXISTS  usr.users CASCADE;
 DROP TABLE IF EXISTS  usr.creditcards CASCADE;
@@ -8,11 +10,13 @@ DROP TABLE IF EXISTS  li.listings CASCADE;
 DROP TABLE IF EXISTS  op.Orders CASCADE;
 DROP TABLE IF EXISTS  op.OrderItems CASCADE;
 DROP TABLE IF EXISTS  op.OrderShipments CASCADE;
+DROP TABLE IF EXISTS  im.Items CASCADE;
+DROP TABLE IF EXISTS cs.CustomerServiceRequests CASCADE;
 
 CREATE TABLE usr.users (
 UserID INT NOT NULL PRIMARY KEY,
-FirstName VARCHAR (50) NOT NULL,
-LastName VARCHAR (50) NOT NULL,
+FirstName VARCHAR(50) NOT NULL,
+LastName VARCHAR(50) NOT NULL,
 Email VARCHAR(50) NOT NULL,
 Address VARCHAR(50) NOT NULL,
 ZipCode VARCHAR(10) NOT NULL
@@ -20,22 +24,60 @@ ZipCode VARCHAR(10) NOT NULL
 
 CREATE TABLE usr.creditcards (
 CreditCardID INT NOT NULL PRIMARY KEY,
-CreditCardNumber VARCHAR (50) NOT NULL,
+CreditCardNumber VARCHAR(50) NOT NULL,
 CreditCardExpirationDate DATE NOT NULL,
 UserID INT NOT NULL,
 FOREIGN KEY (UserID) REFERENCES usr.users(UserID)
+);
+
+CREATE TABLE op.Orders (
+OrderID INT NOT NULL PRIMARY KEY,
+BuyerID INT NOT NULL,
+CreditCardID INT NOT NULL,
+ShippingCost DECIMAL(5,2) NOT NULL,
+TaxRatePercent SMALLINT NOT NULL,
+TotalAmount DECIMAL(8,2) NOT NULL,
+ShippingAddress VARCHAR(100) NULL,
+ShippingZipCode VARCHAR(10) NOT NULL,
+OrderDate TIMESTAMP NOT NULL,
+Status VARCHAR(50) NULL,
+FOREIGN KEY (BuyerID) REFERENCES usr.users(UserID),
+FOREIGN KEY (CreditCardID) REFERENCES usr.creditcards(CreditCardID)
+);
+
+CREATE TABLE op.OrderShipments (
+ShipmentID INT NOT NULL PRIMARY KEY,
+OrderID INT NOT NULL,
+Carrier VARCHAR(50) NOT NULL,
+TrackingNumber VARCHAR(30) NULL,
+OrderShipDate DATE NOT NULL,
+FOREIGN KEY (OrderID) REFERENCES op.Orders (OrderID)
+);
+
+CREATE TABLE im.Items (
+ItemID INT NOT NULL PRIMARY KEY,
+ItemName VARCHAR(100) NOT NULL,
+SellerID INT NOT NULL,
+Type VARCHAR(50) NOT NULL,
+BrandName VARCHAR(100) NOT NULL,
+Color VARCHAR(15) NOT NULL,
+Size VARCHAR(4) NOT NULL,
+Sex VARCHAR(10) NOT NULL,
+Condition VARCHAR(50) NOT NULL,
+ItemStatus VARCHAR(50) NULL,
+ArrivalDate DATE NULL
 );
 
 CREATE TABLE li.listings (
 ListingID INT NOT NULL PRIMARY KEY,
 SellerID INT NOT NULL,
 ProductID INT NOT NULL,
-ShoeType VARCHAR (50),
-Brand VARCHAR (50),
-Color VARCHAR (15),
+ShoeType VARCHAR(50),
+Brand VARCHAR(50),
+Color VARCHAR(15),
 Gender CHAR(1),
 Size VARCHAR(4),
-Condition VARCHAR (50) NOT NULL,
+Condition VARCHAR(50) NOT NULL,
 ListingPrice DECIMAL(8,2) NOT NULL,
 ListingType VARCHAR(20) NOT NULL,
 ListingCreateDate DATE NOT NULL,
@@ -44,72 +86,26 @@ FOREIGN KEY (SellerID) REFERENCES usr.users(UserID),
 FOREIGN KEY (ProductID) REFERENCES im.Items(ItemID)
 );
 
-CREATE TABLE op.Orders (
-OrderID INT NOT NULL PRIMARY KEY,
-BuyerID INT NOT NULL,
-CreditCardID INT NOT NULL,
-ShippingCost DECIMAL (5,2) NOT NULL,
-TaxRatePercent SMALLINT NOT NULL,
-TotalAmount DECIMAL (8,2) NOT NULL,
-ShippingAddress VARCHAR(100) NULL,
-ShippingZipCode VARCHAR (10) NOT NULL,
-OrderDate TIMESTAMP NOT NULL,
-Status VARCHAR (50) NULL,
-FOREIGN KEY (BuyerID) REFERENCES usr.users(UserID),
-FOREIGN KEY (CreditCardID) REFERENCES usr.creditcards(CreditCardID)
-);
-
 CREATE TABLE op.OrderItems (
 OrderID INT NOT NULL,
 ListingID INT NOT NULL,
-ListingSoldPrice DECIMAL (8,2),
+ListingSoldPrice DECIMAL(8,2),
 PRIMARY KEY (OrderID, ListingID),
 FOREIGN KEY (ListingID) REFERENCES li.listings (ListingID),
 FOREIGN KEY (OrderID) REFERENCES op.Orders (OrderID)
 );
 
-CREATE TABLE op.OrderShipments (
-ShipmentID INT NOT NULL PRIMARY KEY,
-OrderID INT NOT NULL,
-Carrier VARCHAR (50) NOT NULL,
-TrackingNumber VARCHAR(30) NULL,
-OrderShipDate DATE NOT NULL,
-FOREIGN KEY (OrderID) REFERENCES op.Orders (OrderID)
-);
-
-CREATE SCHEMA IF NOT EXISTS im;
-
-DROP TABLE IF EXISTS  im.Items CASCADE;
-
-CREATE TABLE im.Items (
-ItemID INT NOT NULL PRIMARY KEY,
-ItemName VARCHAR(100) NOT NULL,
-SellerID INT NOT NULL,
-Type VARCHAR (50) NOT NULL,
-BrandName VARCHAR(100) NOT NULL,
-Color VARCHAR(15) NOT NULL,
-Size VARCHAR(4) NOT NULL,
-Sex VARCHAR(10) NOT NULL,
-Condition VARCHAR (50) NOT NULL,
-ItemStatus VARCHAR(50) NULL,
-ArrivalDate DATE NULL
-);
-
-CREATE SCHEMA IF NOT EXISTS cs;
-
-DROP TABLE IF EXISTS cs.CustomerServiceRequests CASCADE;
-
 CREATE TABLE cs.CustomerServiceRequests (
 ID INT NOT NULL PRIMARY KEY,
 UserID INT NOT NULL,
-FirstName VARCHAR (50) NOT NULL,
-LastName VARCHAR (50) NOT NULL,
-ContactReason VARCHAR (50) NOT NULL,
+FirstName VARCHAR(50) NOT NULL,
+LastName VARCHAR(50) NOT NULL,
+ContactReason VARCHAR(50) NOT NULL,
 Email VARCHAR(50) NULL,
-Phone VARCHAR (50) NULL,
+Phone VARCHAR(50) NULL,
 OrderID INT NULL,
-Resolution VARCHAR (50) NOT NULL,
-ContactMethod VARCHAR (50) NOT NULL
+Resolution VARCHAR(50) NOT NULL,
+ContactMethod VARCHAR(50) NOT NULL
 );
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
