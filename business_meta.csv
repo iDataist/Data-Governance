@@ -1,0 +1,9 @@
+Table,Data Domain,Criticality,Retention Policy,Security Classification,Data Steward
+users,Customers,Very High,Seven years,Internal,Customer Deparment Head
+creditcards,Customers,Very High,Seven years,Internal,Customer Deparment Head
+Orders,Orders,Very High,Seven Years,Internal,Order Deparment Head
+OrderShipments,Orders,Very High,Seven Years,Internal,Order Deparment Head
+Items,Inventory,Medium,Zero Years,Internal,Inventory Deparment Head
+listings,Listings,High,Two Years,Internal,Listings Deparment Head
+OrderItems,Orders,Very High,Seven Years,Internal,Order Deparment Head
+CustomerServiceRequests,Customers,Very High,Seven years,Internal,Customer Deparment Head
